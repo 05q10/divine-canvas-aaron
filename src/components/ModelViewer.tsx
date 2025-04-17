@@ -1,16 +1,40 @@
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, PresentationControls } from '@react-three/drei';
 import { useToast } from "@/components/ui/use-toast";
 
 interface ModelViewerProps {
   modelPath: string;
+  onError?: () => void;
 }
 
-function Model({ modelPath }: { modelPath: string }) {
+function Model({ modelPath, onError }: { modelPath: string; onError?: () => void }) {
   const [error, setError] = useState<boolean>(false);
   const toast = useToast();
+  
+  useEffect(() => {
+    const loadModel = async () => {
+      try {
+        await useGLTF.preload(modelPath);
+      } catch (err) {
+        console.error("Error preloading model:", err);
+        setError(true);
+        if (onError) onError();
+        toast.toast({
+          title: "Error loading 3D model",
+          description: "There was a problem loading the 3D model. Please check that the model file exists.",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    loadModel();
+  }, [modelPath, onError, toast]);
+
+  if (error) {
+    return null;
+  }
   
   try {
     const { scene } = useGLTF(modelPath);
@@ -19,9 +43,10 @@ function Model({ modelPath }: { modelPath: string }) {
     console.error("Error loading model:", err);
     if (!error) {
       setError(true);
+      if (onError) onError();
       toast.toast({
         title: "Error loading 3D model",
-        description: "There was a problem loading the 3D model. Please try again later.",
+        description: "There was a problem displaying the 3D model.",
         variant: "destructive"
       });
     }
@@ -36,7 +61,7 @@ const ModelViewerFallback = () => (
   </mesh>
 );
 
-const ModelViewer = ({ modelPath }: ModelViewerProps) => {
+const ModelViewer = ({ modelPath, onError }: ModelViewerProps) => {
   return (
     <Canvas
       camera={{ position: [0, 0, 5], fov: 50 }}
@@ -54,7 +79,7 @@ const ModelViewer = ({ modelPath }: ModelViewerProps) => {
         azimuth={[-Math.PI / 4, Math.PI / 4]}
       >
         <Suspense fallback={<ModelViewerFallback />}>
-          <Model modelPath={modelPath} />
+          <Model modelPath={modelPath} onError={onError} />
         </Suspense>
       </PresentationControls>
       <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />

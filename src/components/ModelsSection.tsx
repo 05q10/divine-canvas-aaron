@@ -1,6 +1,7 @@
 
 import { motion } from 'framer-motion';
 import ModelCard from './ModelCard';
+import { useState } from 'react';
 
 // Define model type
 interface Model3D {
@@ -11,32 +12,50 @@ interface Model3D {
   thumbnail?: string;
 }
 
-// Sample 3D models data (replace with actual models)
+// Sample 3D models data with fallback paths
 const models: Model3D[] = [
   {
     id: "model1",
     name: "Divine Light Sculpture",
     description: "A 3D interpretation of divine light breaking through darkness, symbolizing creation and revelation.",
-    modelPath: "/models/sample.glb", // Update with your actual model path
+    modelPath: "/models/sample.glb", // Using the sample model for now
     thumbnail: "https://images.unsplash.com/photo-1554177255-61502b352de3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "model2",
     name: "Spiritual Vessel",
     description: "An interactive vessel that represents the human spirit as a container for divine inspiration.",
-    modelPath: "/models/sample.glb", // Update with your actual model path
+    modelPath: "/models/sample.glb", // Using the sample model for now
     thumbnail: "https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "model3",
     name: "Sacred Geometry",
     description: "A 3D exploration of sacred geometric patterns found throughout creation and spiritual architecture.",
-    modelPath: "/models/sample.glb", // Update with your actual model path
+    modelPath: "/models/sample.glb", // Using the sample model for now
     thumbnail: "https://images.unsplash.com/photo-1566979674220-2ec1b24cec60?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
   }
 ];
 
 const ModelsSection = () => {
+  const [errorLoading, setErrorLoading] = useState(false);
+
+  // If there's an error loading the section, show a simple fallback
+  if (errorLoading) {
+    return (
+      <section id="models" className="py-20 bg-divine relative overflow-hidden">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-serif text-white mb-4">
+            Divine <span className="divine-gradient">Dimensions</span>
+          </h2>
+          <p className="text-white/70 max-w-2xl mx-auto mb-12">
+            3D models are currently unavailable. Please check back later.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="models" className="py-20 bg-divine relative overflow-hidden">
       {/* Subtle background pattern */}
@@ -86,6 +105,7 @@ const ModelsSection = () => {
                 description={model.description}
                 modelPath={model.modelPath}
                 thumbnail={model.thumbnail}
+                onError={() => setErrorLoading(true)}
               />
             </motion.div>
           ))}

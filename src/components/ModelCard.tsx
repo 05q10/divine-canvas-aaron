@@ -16,10 +16,17 @@ interface ModelCardProps {
   description: string;
   modelPath: string;
   thumbnail?: string;
+  onError?: () => void;
 }
 
-const ModelCard = ({ id, name, description, modelPath, thumbnail }: ModelCardProps) => {
+const ModelCard = ({ id, name, description, modelPath, thumbnail, onError }: ModelCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [modelError, setModelError] = useState(false);
+
+  const handleModelError = () => {
+    setModelError(true);
+    if (onError) onError();
+  };
 
   return (
     <>
@@ -57,7 +64,16 @@ const ModelCard = ({ id, name, description, modelPath, thumbnail }: ModelCardPro
             <DialogTitle className="text-divine-light font-serif">{name}</DialogTitle>
           </DialogHeader>
           <div className="h-[70vh] w-full bg-divine/70">
-            <ModelViewer modelPath={modelPath} />
+            {modelError ? (
+              <div className="w-full h-full flex items-center justify-center text-center p-4">
+                <div>
+                  <div className="text-divine-light/40 text-6xl mb-4">?</div>
+                  <p className="text-white/80">Unable to load 3D model</p>
+                </div>
+              </div>
+            ) : (
+              <ModelViewer modelPath={modelPath} onError={handleModelError} />
+            )}
           </div>
           <div className="p-4 bg-divine-cosmic border-t border-divine-light/10">
             <p className="text-white/80 text-sm">{description}</p>
