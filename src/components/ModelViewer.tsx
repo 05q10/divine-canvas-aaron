@@ -1,17 +1,40 @@
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, PresentationControls } from '@react-three/drei';
+import { useToast } from "@/components/ui/use-toast";
 
 interface ModelViewerProps {
   modelPath: string;
 }
 
 function Model({ modelPath }: { modelPath: string }) {
-  const { scene } = useGLTF(modelPath);
+  const [error, setError] = useState<boolean>(false);
+  const toast = useToast();
   
-  return <primitive object={scene} dispose={null} />;
+  try {
+    const { scene } = useGLTF(modelPath);
+    return <primitive object={scene} dispose={null} />;
+  } catch (err) {
+    console.error("Error loading model:", err);
+    if (!error) {
+      setError(true);
+      toast.toast({
+        title: "Error loading 3D model",
+        description: "There was a problem loading the 3D model. Please try again later.",
+        variant: "destructive"
+      });
+    }
+    return null;
+  }
 }
+
+const ModelViewerFallback = () => (
+  <mesh>
+    <boxGeometry args={[1, 1, 1]} />
+    <meshStandardMaterial color="purple" />
+  </mesh>
+);
 
 const ModelViewer = ({ modelPath }: ModelViewerProps) => {
   return (
@@ -30,7 +53,7 @@ const ModelViewer = ({ modelPath }: ModelViewerProps) => {
         polar={[-Math.PI / 4, Math.PI / 4]}
         azimuth={[-Math.PI / 4, Math.PI / 4]}
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={<ModelViewerFallback />}>
           <Model modelPath={modelPath} />
         </Suspense>
       </PresentationControls>

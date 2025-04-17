@@ -15,57 +15,37 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Simulate loading assets
+    // Reduced loading time for better debugging
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
+    }, 1000);
     
     return () => clearTimeout(timer);
   }, []);
 
+  // Simple loading indicator
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-divine flex items-center justify-center z-50">
+        <div className="text-4xl md:text-5xl font-serif divine-gradient">
+          Aaron
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AnimatePresence mode="wait">
-      {isLoading ? (
-        <motion.div 
-          key="loader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="fixed inset-0 bg-divine flex items-center justify-center z-50"
-        >
-          <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.7, 1, 0.7]
-            }}
-            transition={{ 
-              repeat: Infinity,
-              duration: 2
-            }}
-            className="text-4xl md:text-5xl font-serif divine-gradient"
-          >
-            Aaron
-          </motion.div>
-        </motion.div>
-      ) : (
-        <motion.div 
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="min-h-screen bg-divine text-white overflow-x-hidden"
-        >
-          <Navbar />
-          <Hero />
-          <About />
-          <Gallery />
-          <Process />
-          <ModelsSection />
-          <Inspiration />
-          <Contact />
-          <Footer />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="min-h-screen bg-divine text-white overflow-x-hidden">
+      <Navbar />
+      <Hero />
+      <About />
+      <Gallery />
+      <Process />
+      <ModelsSection />
+      <Inspiration />
+      <Contact />
+      <Footer />
+    </div>
   );
 };
 
