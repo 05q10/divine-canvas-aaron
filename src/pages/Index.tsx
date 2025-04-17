@@ -6,6 +6,7 @@ import Hero from '../components/Hero';
 import About from '../components/About';
 import Gallery from '../components/Gallery';
 import Process from '../components/Process';
+import ModelsSection from '../components/ModelsSection';
 import Inspiration from '../components/Inspiration';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
@@ -58,6 +59,7 @@ const Index = () => {
           <About />
           <Gallery />
           <Process />
+          <ModelsSection />
           <Inspiration />
           <Contact />
           <Footer />
